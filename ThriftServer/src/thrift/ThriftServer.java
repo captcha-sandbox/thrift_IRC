@@ -11,6 +11,9 @@ package thrift;
  * @author Lenovo
  */
 
+import IRCService.IRCService;
+import java.util.ArrayList;
+import java.util.List;
 import org.apache.thrift.server.TServer;
 import org.apache.thrift.server.TServer.Args;
 import org.apache.thrift.server.TSimpleServer;
@@ -20,13 +23,21 @@ import org.apache.thrift.transport.TServerTransport;
 public class ThriftServer {
     
     public static RequestHandler handler;
-    
-    public static MultiplicationService.Processor processor;
+    public static IRCService.Processor processor;
+    public static List<String> channelList = new ArrayList<>();
+    public static List<ChatUser> userList = new ArrayList<>();
+    public static List<ChatMessage> inbox = new ArrayList<>();
     
     public static void main(String[] args) {
         try {
+            ChatUser dummy = new ChatUser();
+            ChatMessage test = new ChatMessage();
+            
             handler = new RequestHandler();
-            processor = new MultiplicationService.Processor(handler);
+            processor = new IRCService.Processor(handler);
+            channelList.add("dummy");
+            userList.add(dummy);
+            inbox.add(test);
             
             Runnable simple;
             simple = new Runnable() {
@@ -42,7 +53,7 @@ public class ThriftServer {
         }
     }
     
-    public static void simple(MultiplicationService.Processor processor) {
+    public static void simple(IRCService.Processor processor) {
         try {
             TServerTransport serverTransport = new TServerSocket(9090);
             TServer server = new TSimpleServer(new Args(serverTransport).processor(processor));
