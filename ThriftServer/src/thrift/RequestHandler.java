@@ -25,6 +25,10 @@ public class RequestHandler implements IRCService.Iface{
         new_member.setUsername(nickname);
         userList.add(new_member);
         System.out.println(nickname + " is signing in to server");
+        for(ChatUser member : userList)
+        {
+            System.out.println(member.getUsername());
+        }
         return nickname;
     }
     
@@ -73,11 +77,12 @@ public class RequestHandler implements IRCService.Iface{
         ChatMessage retrieve = retrieveMessage(nickname);
         String message = retrieve.getMessage();
         String sender = retrieve.getSender();
+        String channelMsg = retrieve.getChannel();
         if(message == null || sender == null) {
             message = "";
         }
         else {
-            message = sender + ": " + message;
+            message = "[" + channelMsg + "]("+sender + ") : " + message;
         }
         System.out.println("The message is "+message);
         return message;
@@ -89,12 +94,22 @@ public class RequestHandler implements IRCService.Iface{
         msg.setMessage(text);
         msg.setStatus(false);
         msg.setSender(nickname);
+        msg.setChannel(channel);
         for (ChatUser user : userList) {
             distributeMessage(user.getUsername(), channel, msg);
         }
         
         System.out.println(nickname+" is sending message");
         System.out.println(text);
+        
+        for(ChatUser member : userList)
+        {
+            System.out.println(member.getUsername());
+            for(ChatMessage chat : member.getInbox())
+            {
+                System.out.println(chat.getMessage());
+            }
+        }
     }
     
     @Override
@@ -184,7 +199,7 @@ public class RequestHandler implements IRCService.Iface{
     public ChatMessage retrieveMessage(String username) {
         
         int index = searchMember(username);
-        int unread = unreadMessage(username);
+        int unread = 0;
         List<ChatMessage> inbox = userList.get(index).getInbox();
         
         ChatMessage message = new ChatMessage();

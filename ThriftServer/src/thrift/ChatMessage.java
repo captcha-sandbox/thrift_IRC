@@ -18,6 +18,7 @@ public class ChatMessage {
     private String message;
     private String sender;
     private boolean status;
+    private String channel;
 
     public String getMessage() {
         return message;
@@ -42,5 +43,12 @@ public class ChatMessage {
     public void setSender(String sender) {
         this.sender = sender;
     }
-    
+
+    public String getChannel() {
+        return channel;
+    }
+
+    public void setChannel(String channel) {
+        this.channel = channel;
+    }
 }

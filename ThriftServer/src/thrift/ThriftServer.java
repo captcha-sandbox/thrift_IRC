@@ -17,6 +17,7 @@ import java.util.List;
 import org.apache.thrift.server.TServer;
 import org.apache.thrift.server.TServer.Args;
 import org.apache.thrift.server.TSimpleServer;
+import org.apache.thrift.server.TThreadPoolServer;
 import org.apache.thrift.transport.TServerSocket;
 import org.apache.thrift.transport.TServerTransport;
 
@@ -35,9 +36,9 @@ public class ThriftServer {
             
             handler = new RequestHandler();
             processor = new IRCService.Processor(handler);
-            channelList.add("dummy");
-            userList.add(dummy);
-            inbox.add(test);
+//            channelList.add("dummy");
+//            userList.add(dummy);
+//            inbox.add(test);
             
             Runnable simple;
             simple = new Runnable() {
@@ -56,7 +57,8 @@ public class ThriftServer {
     public static void simple(IRCService.Processor processor) {
         try {
             TServerTransport serverTransport = new TServerSocket(9090);
-            TServer server = new TSimpleServer(new Args(serverTransport).processor(processor));
+//            TServer server = new TSimpleServer(new Args(serverTransport).processor(processor));
+            TServer server = new TThreadPoolServer(new TThreadPoolServer.Args(serverTransport).processor(processor));
             
             System.out.println("Starting the simple server ...");
             server.serve();
