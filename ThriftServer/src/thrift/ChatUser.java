@@ -17,6 +17,7 @@ public class ChatUser {
     
     private String username;
     private List<String> membership = new ArrayList<>();
+    private List<ChatMessage> inbox = new ArrayList<>();
 
     public String getUsername() {
         return username;
@@ -33,6 +34,14 @@ public class ChatUser {
     public void setMembership(List<String> membership) {
         this.membership = membership;
     }
+
+    public List<ChatMessage> getInbox() {
+        return inbox;
+    }
+
+    public void setInbox(List<ChatMessage> inbox) {
+        this.inbox = inbox;
+    }
     
     public void addMembership(String channel) {
         membership.add(channel);
@@ -42,5 +51,16 @@ public class ChatUser {
     public void leaveGroup(String channel) {
         int index = membership.indexOf(channel);
         membership.remove(index);
+    }
+    
+    public void addMessage(ChatMessage message) {
+        inbox.add(message);
+    }
+    
+    public void deleteMessage() {
+        ChatMessage chat = inbox.get(0);
+        if(chat.isStatus()) {
+            inbox.remove(0);
+        }
     }
 }

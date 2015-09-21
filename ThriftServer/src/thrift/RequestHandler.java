@@ -11,10 +11,11 @@ package thrift;
  * @author Lenovo
  */
 import IRCService.IRCService;
+import java.util.List;
 import org.apache.thrift.TException;
 import static thrift.ThriftServer.channelList;
-import static thrift.ThriftServer.userList;
 import static thrift.ThriftServer.inbox;
+import static thrift.ThriftServer.userList;
 
 public class RequestHandler implements IRCService.Iface{
     
@@ -68,15 +69,30 @@ public class RequestHandler implements IRCService.Iface{
     
     @Override
     public String receiveMessage(String text, String nickname, String channel) {
-        return nickname;
+        
+        ChatMessage retrieve = retrieveMessage(nickname);
+        String message = retrieve.getMessage();
+        String sender = retrieve.getSender();
+        if(message == null || sender == null) {
+            message = "";
+        }
+        else {
+            message = sender + ": " + message;
+        }
+        System.out.println("The message is "+message);
+        return message;
     }
     
     @Override
     public void sendMessage(String text, String nickname, String channel) {
         ChatMessage msg = new ChatMessage();
         msg.setMessage(text);
-        msg.addMembership(channel);
-        inbox.add(msg);
+        msg.setStatus(false);
+        msg.setSender(nickname);
+        for (ChatUser user : userList) {
+            distributeMessage(user.getUsername(), channel, msg);
+        }
+        
         System.out.println(nickname+" is sending message");
         System.out.println(text);
     }
@@ -121,5 +137,62 @@ public class RequestHandler implements IRCService.Iface{
         i++;    
         }
         return index;
+    }
+    
+    public boolean isMember(String username, String channel) {
+        
+        boolean member = false;
+        int index = searchMember(username);
+        List<String> temp = userList.get(index).getMembership();
+        
+        int i = 0;
+        while(i<temp.size() && !member) {
+            if(temp.get(i).equals(channel)) {
+                member = true;
+            }
+            i++;
+        }
+        return member;
+    }
+    
+    public void distributeMessage(String username, String channel, ChatMessage chat) {
+        
+        int index = searchMember(username);
+        if(isMember(username, channel)) {
+            userList.get(index).addMessage(chat);
+            System.out.println("Message is sent to "+ username);
+        }
+    }
+    
+    public int unreadMessage(String username) {
+     
+        boolean unread = false;
+        int message = 0;
+        int index = searchMember(username);
+        List<ChatMessage> inbox = userList.get(index).getInbox();
+        
+        int i = 0;
+        while(i<inbox.size() && !unread) {
+            if(!inbox.get(i).isStatus()) {
+                unread = true;
+                message = i;
+            }
+        }
+        return message;
+    }
+    
+    public ChatMessage retrieveMessage(String username) {
+        
+        int index = searchMember(username);
+        int unread = unreadMessage(username);
+        List<ChatMessage> inbox = userList.get(index).getInbox();
+        
+        ChatMessage message = new ChatMessage();
+        if(!inbox.isEmpty()) {
+            message = inbox.get(unread);
+            inbox.get(unread).setStatus(true);
+            userList.get(index).deleteMessage();
+        }
+        return message;
     }
 }

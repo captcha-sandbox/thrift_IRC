@@ -73,6 +73,9 @@ public class ThriftClient {
             }
             sendChat(client, chat, channel);
         }
+        else if(input[0].equals("get")) {
+            receiveChat(client);
+        }
     }
     
     //request for nickname
@@ -104,5 +107,15 @@ public class ThriftClient {
         
         client.sendMessage(text, username, channel);
         System.out.println("Mesage sent");
+    }
+    
+    public static void receiveChat(IRCService.Client client) throws TException {
+        
+        String chat = client.receiveMessage("", username, "");
+        System.out.println(chat);
+    }
+    
+    public static void sendAll(IRCService.Client client, String text, String channel) {
+        
     }
 }

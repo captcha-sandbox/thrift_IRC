@@ -16,7 +16,8 @@ import java.util.List;
 public class ChatMessage {
     
     private String message;
-    private List<String> membership = new ArrayList<>();
+    private String sender;
+    private boolean status;
 
     public String getMessage() {
         return message;
@@ -26,20 +27,20 @@ public class ChatMessage {
         this.message = message;
     }
 
-    public List<String> getMembership() {
-        return membership;
+    public boolean isStatus() {
+        return status;
     }
 
-    public void setMembership(List<String> membership) {
-        this.membership = membership;
+    public void setStatus(boolean status) {
+        this.status = status;
+    }
+
+    public String getSender() {
+        return sender;
+    }
+
+    public void setSender(String sender) {
+        this.sender = sender;
     }
     
-    public void addMembership(String channel) {
-        membership.add(channel);
-    }
-    
-    public void leaveGroup(String channel) {
-        int index = membership.indexOf(channel);
-        membership.remove(index);
-    }
 }
