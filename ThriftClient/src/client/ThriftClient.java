@@ -43,7 +43,7 @@ public class ThriftClient {
         Scanner in = new Scanner(System.in);
         while(isOnline) {
             
-            String test = in.nextLine();
+            String test = in.nextLine().toLowerCase();
             processRequest(client, test);
         }
     }
