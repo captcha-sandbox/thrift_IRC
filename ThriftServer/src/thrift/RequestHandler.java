@@ -95,21 +95,25 @@ public class RequestHandler implements IRCService.Iface{
         msg.setStatus(false);
         msg.setSender(nickname);
         msg.setChannel(channel);
-        for (ChatUser user : userList) {
-            distributeMessage(user.getUsername(), channel, msg);
+        if(!channel.equals("")) {
+            for (ChatUser user : userList) {
+                distributeMessage(user.getUsername(), channel, msg);
+            }
         }
-        
+        else {
+            sendAll(nickname, msg);
+        }
         System.out.println(nickname+" is sending message");
         System.out.println(text);
         
-        for(ChatUser member : userList)
-        {
-            System.out.println(member.getUsername());
-            for(ChatMessage chat : member.getInbox())
-            {
-                System.out.println(chat.getMessage());
-            }
-        }
+//        for(ChatUser member : userList)
+//        {
+//            System.out.println(member.getUsername());
+//            for(ChatMessage chat : member.getInbox())
+//            {
+//                System.out.println(chat.getMessage());
+//            }
+//        }
     }
     
     @Override
@@ -176,6 +180,18 @@ public class RequestHandler implements IRCService.Iface{
         if(isMember(username, channel)) {
             userList.get(index).addMessage(chat);
             System.out.println("Message is sent to "+ username);
+        }
+    }
+    
+    public void sendAll(String username, ChatMessage chat) {
+        
+        int index = searchMember(username);
+        List<String> membership = userList.get(index).getMembership();
+        for(String channel : membership) {
+            for(ChatUser user : userList) {
+                chat.setChannel(channel);
+                distributeMessage(user.getUsername(), channel, chat);
+            }
         }
     }
     

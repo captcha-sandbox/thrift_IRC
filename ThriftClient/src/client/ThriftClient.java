@@ -76,6 +76,14 @@ public class ThriftClient {
         else if(input[0].equals("get")) {
             receiveChat(client);
         }
+        else {
+            String channel = "";
+            String chat = "";
+            for(int i=0; i<input.length; i++) {
+                chat+=input[i]+" ";
+            }
+            sendChat(client, chat, channel);
+        }
     }
     
     //request for nickname
